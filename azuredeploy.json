@@ -293,33 +293,6 @@
       "properties": {}
     },
     {
-      "apiVersion": "[variables('apiVersionDeployments')]",
-      "name": "loadBalancerLinkedTemplate",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('artifactsLocationURL'), '/nested/loadBalancer.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "virtualNetworkName": {"value": "[variables('virtualNetworkName')]"},
-          "subnetName":{"value": "[variables('txSubnetName')]"},
-          "loadBalancerName": {"value": "[variables('loadBalancerName')]"},
-          "loadBalancerBackendAddressPoolName":{"value": "[variables('loadBalancerBackendAddressPoolName')]"},
-          "loadBalancerInboundNatRuleNamePrefix":{"value": "[variables('loadBalancerInboundNatRuleNamePrefix')]"},
-          "frontendPort1":{"value": "[variables('httpPort')]"},
-          "backendPort1":{"value": "[variables('adminSitePort')]"},
-          "frontendPort2":{"value": "[variables('gethRPCPort')]"},
-          "backendPort2":{"value": "[variables('gethRPCPort')]"},
-          "numInboundNATRules":{"value": "[parameters('numTXNodes')]"},
-          "inboundNATRuleFrontendStartingPort":{"value": "[variables('sshNATFrontEndStartingPort')]"},
-          "inboundNATRuleBackendPort":{"value": "[variables('sshPort')]"},
-          "location":{"value": "[variables('location')]"}
-        }
-      }
-    },
-    {
       "apiVersion": "[variables('apiVersionNetworkSecurityGroups')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('mnNsgName')]",
@@ -431,6 +404,37 @@
           ]
         },
         "subnets": "[take(variables('subnetPropertiesArray'), variables('numSubnets'))]"
+      }
+    },
+     {
+      "apiVersion": "[variables('apiVersionDeployments')]",
+      "name": "loadBalancerLinkedTemplate",
+      "type": "Microsoft.Resources/deployments",
+       "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('artifactsLocationURL'), '/nested/loadBalancer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "virtualNetworkName": {"value": "[variables('virtualNetworkName')]"},
+          "subnetName":{"value": "[variables('txSubnetName')]"},
+          "loadBalancerName": {"value": "[variables('loadBalancerName')]"},
+          "loadBalancerBackendAddressPoolName":{"value": "[variables('loadBalancerBackendAddressPoolName')]"},
+          "loadBalancerInboundNatRuleNamePrefix":{"value": "[variables('loadBalancerInboundNatRuleNamePrefix')]"},
+          "frontendPort1":{"value": "[variables('httpPort')]"},
+          "backendPort1":{"value": "[variables('adminSitePort')]"},
+          "frontendPort2":{"value": "[variables('gethRPCPort')]"},
+          "backendPort2":{"value": "[variables('gethRPCPort')]"},
+          "numInboundNATRules":{"value": "[parameters('numTXNodes')]"},
+          "inboundNATRuleFrontendStartingPort":{"value": "[variables('sshNATFrontEndStartingPort')]"},
+          "inboundNATRuleBackendPort":{"value": "[variables('sshPort')]"},
+          "location":{"value": "[variables('location')]"}
+        }
       }
     },
     {
