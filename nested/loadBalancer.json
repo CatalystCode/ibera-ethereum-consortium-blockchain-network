@@ -65,8 +65,9 @@
       "name": "[parameters('loadBalancerName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[parameters('location')]",
-      "dependsOn": [
-      ],
+     "dependsOn": [ 
+   "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+     ], 
       "properties": {
         "frontendIPConfigurations": [
           {
