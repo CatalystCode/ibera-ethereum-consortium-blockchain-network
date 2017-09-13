@@ -157,7 +157,7 @@
   },
   "variables": {
     "location": "[resourceGroup().location]",
-    "artifactsLocationURL": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/ethereum-consortium-blockchain-network",
+    "artifactsLocationURL": "https://github.com/CatalystCode/ibera-ethereum-consortium-blockchain-network",
     "apiVersionDeployments": "2016-09-01",
     "apiVersionStorageAccounts": "2016-01-01",
     "apiVersionAvailabilitySets": "2016-03-30",
@@ -303,8 +303,9 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
+          "virtualNetworkName": {"value": "[variables('virtualNetworkName')]"},
+          "subnetName":{"value": "[variables('txSubnetName')]"},
           "loadBalancerName": {"value": "[variables('loadBalancerName')]"},
-          "dnsHostName":{"value": "[variables('namingInfix')]"},
           "loadBalancerBackendAddressPoolName":{"value": "[variables('loadBalancerBackendAddressPoolName')]"},
           "loadBalancerInboundNatRuleNamePrefix":{"value": "[variables('loadBalancerInboundNatRuleNamePrefix')]"},
           "frontendPort1":{"value": "[variables('httpPort')]"},
@@ -542,11 +543,11 @@
   "outputs": {
     "admin-site": {
       "type": "string",
-      "value": "[concat('http://', reference('loadBalancerLinkedTemplate').outputs.fqdn.value)]"
+      "value": "http://10.0.10.4"
     },
     "ethereum-rpc-endpoint": {
       "type": "string",
-      "value": "[concat('http://', reference('loadBalancerLinkedTemplate').outputs.fqdn.value, ':', variables('gethRPCPort'))]"
+      "value": "[concat('http://10.0.10.4:', variables('gethRPCPort'))]"
     },
     "ssh-to-first-tx-node": {
       "type": "string",

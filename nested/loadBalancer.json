@@ -2,10 +2,19 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "loadBalancerName": {
-      "type": "string"
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "This is the name of the Virtual Network"
+      }
     },
-    "dnsHostName": {
+     "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "This is the name of the Virtual Network Subnet"
+      }
+    },
+    "loadBalancerName": {
       "type": "string"
     },
     "loadBalancerBackendAddressPoolName": {
@@ -37,48 +46,41 @@
     },
     "location": {
       "type": "string"
-    }
+    },
   },
   "variables": {
-    "apiVersionPublicIPAddresses": "2016-09-01",
     "apiVersionLoadBalancers": "2016-09-01",
     "apiVersionLoadBalanceInboundNATRules": "2016-09-01",
     "lbID": "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancerName'))]",
-    "lbPublicIPAddressName": "[concat(parameters('dnsHostName'), '-publicip')]",
     "lbFrontEndIpConfigName": "LoadBalancerFrontEnd",
     "lbFrontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('lbFrontEndIpConfigName'))]",
     "lbBackendAddressPoolID": "[concat(variables('lbID'), '/backendAddressPools/', parameters('loadBalancerBackendAddressPoolName'))]",
-    "loadBalancerInboundNatRuleIDprefix": "[concat(variables('lbID'),'/inboundNatRules/',parameters('loadBalancerInboundNatRuleNamePrefix'))]"
+    "loadBalancerInboundNatRuleIDprefix": "[concat(variables('lbID'),'/inboundNatRules/',parameters('loadBalancerInboundNatRuleNamePrefix'))]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters ('subnetName'))]"
   },
   "resources": [
-    {
-      "apiVersion": "[variables('apiVersionPublicIPAddresses')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('lbPublicIPAddressName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsHostName')]"
-        }
-      }
-    },
     {
       "apiVersion": "[variables('apiVersionLoadBalancers')]",
       "name": "[parameters('loadBalancerName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('lbPublicIPAddressName'))]"
       ],
       "properties": {
         "frontendIPConfigurations": [
           {
             "name": "[variables('lbFrontEndIpConfigName')]",
             "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('lbPublicIPAddressName'))]"
-              }
+               "subnet": {
+
+                "id": "[variables('subnetRef')]"
+
+              },
+
+              "privateIPAddress": "10.0.10.4",
+
+              "privateIPAllocationMethod": "Static"
             }
           }
         ],
