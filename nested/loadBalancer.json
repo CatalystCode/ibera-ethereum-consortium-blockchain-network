@@ -173,11 +173,5 @@
         "enableFloatingIP": false
       }
     }
-  ],
-  "outputs": {
-    "fqdn": {
-      "type": "string",
-      "value": "[reference(variables('lbPublicIPAddressName')).dnsSettings.fqdn]"
-    }
-  }
+  ]
 }
